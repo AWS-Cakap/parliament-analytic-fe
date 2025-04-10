@@ -1,22 +1,26 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Detail Partai - Pantau Parlemen</title>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
+
 <body class="bg-black text-white font-sans">
 
   <!-- Header -->
   <header class="bg-gray-900 shadow p-4 flex justify-between items-center">
     <div class="flex items-center space-x-4">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/9/9f/Flag_of_Indonesia.svg" alt="Bendera Indonesia" class="h-6 w-auto">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/9/9f/Flag_of_Indonesia.svg" alt="Bendera Indonesia"
+        class="h-6 w-auto">
       <h1 class="text-2xl font-bold">Pantau Parlemen</h1>
     </div>
     <nav class="space-x-4">
-      <a href="#" class="hover:underline">Beranda</a>
-      <a href="#" class="hover:underline">Login</a>
+      <a href="index.html" class="hover:underline">Beranda</a>
+      <a href="Login.html" class="hover:underline">Login</a>
     </nav>
   </header>
 
@@ -25,15 +29,11 @@
     <!-- Info Partai -->
     <section class="bg-gray-900 rounded-lg p-6 shadow-md mb-6">
       <h2 class="text-2xl font-bold mb-4">Informasi Partai</h2>
-      <div class="space-y-2 text-gray-300">
-        <p><strong>Nama Partai:</strong> PDI-P</p>
-        <p><strong>Berdiri Sejak:</strong> 1973</p>
-        <p><strong>Ketua Umum:</strong> Megawati Soekarnoputri</p>
-        <p><strong>Ideologi:</strong> Pancasila</p>
-        <p><strong>Situs Web:</strong> <a href="#" class="text-blue-400 underline">https://www.pdiperjuangan.id/</a></p>
+      <div id="partyDetail" class="space-y-2 text-gray-300">
+
       </div>
     </section>
-
+    
     <!-- Grafik Sentimen -->
     <section class="bg-gray-900 rounded-lg p-6 shadow-md mb-6">
       <h2 class="text-2xl font-bold mb-4">Sentimen Publik (30 Hari Terakhir)</h2>
@@ -70,5 +70,38 @@
     </section>
 
   </main>
+  <script>
+    async function loadDetail() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const id = urlParams.get('id');
+
+      try {
+        const res = await fetch(`http://localhost:8080/partai/${id}`);
+        const { data } = await res.json();
+
+        const imageUrl = `http://localhost:8080/${data.Logo.replace(/\\/g, '/')}`;
+        const tanggal = new Date(data.EstablishDate).toLocaleDateString('id-ID', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        });
+
+        document.getElementById('partyDetail').innerHTML = `
+          <img src="${imageUrl}" alt="Logo Partai" class="h-20 mb-4" />
+          <p><strong>Nama Partai:</strong> ${data.Name}</p>
+          <p><strong>Berdiri Sejak:</strong> ${tanggal}</p>
+          <p><strong>Ketua Umum:</strong> ${data.Leader || '-'}</p>
+          <p><strong>Ideologi:</strong> ${data.Ideology || '-'}</p>
+          <p><strong>Situs Web:</strong> <a href="${data.Website || '#'}" class="text-blue-400 underline" target="_blank">${data.Website || '-'}</a></p>
+        `;
+      } catch (error) {
+        console.error(error);
+        Swal.fire('Gagal!', 'Tidak dapat mengambil detail partai.', 'error');
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadDetail);
+  </script>
 </body>
+
 </html>

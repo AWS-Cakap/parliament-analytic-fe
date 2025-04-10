@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <title>Pantau Parlemen - Daftar Partai</title>
   <style>
     * {
       box-sizing: border-box;
     }
+
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       margin: 0;
@@ -15,6 +18,7 @@
       background-color: #000000;
       color: #f1f5f9;
     }
+
     header {
       background-color: #0f172a;
       color: white;
@@ -23,20 +27,24 @@
       justify-content: space-between;
       align-items: center;
     }
+
     .header-left {
       display: flex;
       align-items: center;
       gap: 15px;
     }
+
     .header-left img {
       height: 28px;
       width: auto;
     }
+
     header h1 {
       font-size: 1.75rem;
       margin: 0;
       font-weight: 700;
     }
+
     nav a {
       margin-left: 30px;
       color: #f1f5f9;
@@ -46,9 +54,11 @@
       position: relative;
       transition: color 0.2s ease-in-out;
     }
+
     nav a:hover {
       color: #38bdf8;
     }
+
     nav a::after {
       content: '';
       display: block;
@@ -60,17 +70,21 @@
       bottom: -4px;
       left: 0;
     }
+
     nav a:hover::after {
       width: 100%;
     }
+
     .container {
       padding: 40px;
       max-width: 1200px;
       margin: auto;
     }
+
     .search-box {
       margin-bottom: 30px;
     }
+
     .search-box input {
       width: 100%;
       padding: 12px;
@@ -80,41 +94,48 @@
       color: #f1f5f9;
       font-size: 1rem;
     }
+
     .party-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
       gap: 20px;
     }
+
     .party-card {
       background-color: #1e293b;
       border-radius: 12px;
       padding: 20px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
       transition: transform 0.2s ease-in-out;
     }
+
     .party-card:hover {
       transform: translateY(-5px);
     }
+
     .party-card img {
       width: 80px;
       height: 80px;
       margin-bottom: 15px;
       border-radius: 50%;
     }
+
     .party-card h3 {
       margin: 10px 0 5px;
       font-size: 1.2rem;
       color: #ffffff;
     }
+
     .party-card p {
       font-size: 0.95rem;
       color: #cbd5e1;
       margin-bottom: 15px;
     }
+
     .detail-button {
       background-color: #3b82f6;
       color: white;
@@ -125,11 +146,13 @@
       font-weight: 600;
       transition: background-color 0.2s ease-in-out;
     }
+
     .detail-button:hover {
       background-color: #2563eb;
     }
   </style>
 </head>
+
 <body>
   <header>
     <div class="header-left">
@@ -137,8 +160,8 @@
       <h1>Pantau Parlemen</h1>
     </div>
     <nav>
-      <a href="#">Beranda</a>
-      <a href="#">Login</a>
+      <a href="index.html">Beranda</a>
+      <a href="Login.html">Login</a>
     </nav>
   </header>
 
@@ -147,26 +170,47 @@
       <input type="text" placeholder="Cari partai politik berdasarkan nama...">
     </div>
 
-    <div class="party-grid">
-      <div class="party-card">
-        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Logo Partai" />
-        <h3>PDI-P</h3>
-        <p>Berdiri 10 Januari 1973 <br> Ketua Umum: Megawati Soekarnoputri</p>
-        <a href="#" class="detail-button">Lihat Detail</a>
-      </div>
-      <div class="party-card">
-        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Logo Partai" />
-        <h3>Gerindra</h3>
-        <p>Berdiri 6 Februari 2004 <br> Ketua Umum: Prabowo Subianto</p>
-        <a href="#" class="detail-button">Lihat Detail</a>
-      </div>
-      <div class="party-card">
-        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Logo Partai" />
-        <h3>Golkar</h3>
-        <p>Berdiri 20 Oktober 1964 <br> Ketua Umum: Airlangga Hartarto</p>
-        <a href="#" class="detail-button">Lihat Detail</a>
-      </div>
-    </div>
+    <div class="party-grid" id="partyGrid"></div>
   </div>
+
+  <script>
+
+    async function fetchPartaiGrid() {
+      try {
+        const response = await fetch('http://localhost:8080/partai');
+        const result = await response.json();
+
+        const grid = document.getElementById('partyGrid');
+        grid.innerHTML = '';
+
+        result.data.forEach(party => {
+          const imageUrl = `http://localhost:8080/${party.Logo.replace(/\\/g, '/')}`;
+          const tanggal = new Date(party.EstablishDate).toLocaleDateString('id-ID', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          });
+
+          const card = `
+        <div class="party-card">
+          <img src="${imageUrl}" alt="Logo Partai" />
+          <h3>${party.Name}</h3>
+          <p>Berdiri ${tanggal}</p>
+          <a href="DetailPartai.html?id=${party.ID}" class="detail-button">Lihat Detail</a>
+        </div>
+      `;
+          grid.innerHTML += card;
+        });
+      } catch (error) {
+        console.error('Gagal memuat data partai:', error);
+        Swal.fire('Gagal!', 'Tidak dapat mengambil data partai.', 'error');
+      }
+    }
+
+    // Panggil function saat halaman selesai dimuat
+    document.addEventListener('DOMContentLoaded', fetchPartaiGrid);
+
+  </script>
 </body>
+
 </html>
