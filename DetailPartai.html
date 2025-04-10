@@ -33,7 +33,7 @@
 
       </div>
     </section>
-    
+
     <!-- Grafik Sentimen -->
     <section class="bg-gray-900 rounded-lg p-6 shadow-md mb-6">
       <h2 class="text-2xl font-bold mb-4">Sentimen Publik (30 Hari Terakhir)</h2>
@@ -76,10 +76,10 @@
       const id = urlParams.get('id');
 
       try {
-        const res = await fetch(`http://localhost:8080/partai/${id}`);
+        const res = await fetch(`http://3.1.221.218:8080/partai/${id}`);
         const { data } = await res.json();
 
-        const imageUrl = `http://localhost:8080/${data.Logo.replace(/\\/g, '/')}`;
+        const imageUrl = `http://3.1.221.218:8080/${data.Logo.replace(/\\/g, '/')}`;
         const tanggal = new Date(data.EstablishDate).toLocaleDateString('id-ID', {
           year: 'numeric',
           month: 'long',

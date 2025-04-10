@@ -263,7 +263,7 @@
 
     async function fetchPartaiData() {
       try {
-        const response = await fetch('http://localhost:8080/admin/partai', {
+        const response = await fetch('http://3.1.221.218:8080/admin/partai', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -275,7 +275,7 @@
         tbody.innerHTML = '';
 
         result.data.forEach(party => {
-          const imageUrl = `http://localhost:8080/${party.Logo.replace(/\\/g, "/")}`;
+          const imageUrl = `http://3.1.221.218:8080/${party.Logo.replace(/\\/g, "/")}`;
           const encodedParty = btoa(JSON.stringify(party));
           const row = `
           <tr>
@@ -305,7 +305,7 @@
         cancelButtonText: 'Batal'
       }).then(async (result) => {
         if (result.isConfirmed) {
-          const response = await fetch(`http://localhost:8080/admin/partai/${id}`, {
+          const response = await fetch(`http://3.1.221.218:8080/admin/partai/${id}`, {
             method: 'DELETE',
             headers: {
               'Authorization': 'Bearer ' + localStorage.getItem('token')
@@ -339,7 +339,7 @@
       }
 
       const partaiId = idInput.value;
-      let url = 'http://localhost:8080/admin/partai';
+      let url = 'http://3.1.221.218:8080/admin/partai';
       let method = 'POST';
 
       if (partaiId) {

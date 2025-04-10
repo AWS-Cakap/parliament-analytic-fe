@@ -177,14 +177,14 @@
 
     async function fetchPartaiGrid() {
       try {
-        const response = await fetch('http://localhost:8080/partai');
+        const response = await fetch('http://3.1.221.218:8080/partai');
         const result = await response.json();
 
         const grid = document.getElementById('partyGrid');
         grid.innerHTML = '';
 
         result.data.forEach(party => {
-          const imageUrl = `http://localhost:8080/${party.Logo.replace(/\\/g, '/')}`;
+          const imageUrl = `http://3.1.221.218:8080/${party.Logo.replace(/\\/g, '/')}`;
           const tanggal = new Date(party.EstablishDate).toLocaleDateString('id-ID', {
             year: 'numeric',
             month: 'long',
