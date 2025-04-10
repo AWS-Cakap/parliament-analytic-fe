@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Panel Admin - Analitik Parlemen</title>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f8fafc;
+      display: flex;
+    }
+
+    .sidebar {
+      width: 240px;
+      background-color: #1e293b;
+      color: white;
+      height: 100vh;
+      padding: 20px;
+      position: fixed;
+    }
+
+    .sidebar h2 {
+      font-size: 1.5rem;
+      margin-bottom: 30px;
+    }
+
+    .sidebar a {
+      display: block;
+      color: #cbd5e1;
+      text-decoration: none;
+      margin-bottom: 20px;
+      font-weight: 500;
+      padding: 10px;
+      border-radius: 6px;
+      transition: background 0.2s;
+    }
+
+    .sidebar a:hover,
+    .sidebar a.active {
+      background-color: #334155;
+      color: #38bdf8;
+    }
+
+    .content {
+      margin-left: 260px;
+      padding: 30px;
+      width: 100%;
+    }
+
+    h3 {
+      margin-top: 0;
+      color: #0f172a;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    th,
+    td {
+      padding: 12px;
+      border: 1px solid #e2e8f0;
+      text-align: left;
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 6px;
+      border: 1px solid #cbd5e1;
+    }
+
+    button {
+      padding: 10px 20px;
+      border: none;
+      background-color: #0ea5e9;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .section {
+      display: none;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    header,
+    footer {
+      background-color: #f1f5f9;
+      padding: 10px 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    footer {
+      margin-top: 40px;
+      font-size: 0.9rem;
+      text-align: center;
+      color: #64748b;
+    }
+
+    .icon-button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      margin-right: 8px;
+    }
+
+    .icon-button svg {
+      width: 20px;
+      height: 20px;
+      vertical-align: middle;
+      fill: #0f172a;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h2>Panel Admin</h2>
+    <a href="#" class="active" onclick="showSection('crud')">Manajemen Partai</a>
+    <a href="#" onclick="showSection('schedule')">Jadwal Crawling</a>
+    <a href="#" onclick="showSection('reports')">Manajemen Laporan</a>
+    <a href="Login.html" onclick="logout()">Keluar</a>
+  </div>
+
+  <!-- Main Content -->
+  <div class="content">
+    <header>
+      <header>
+        <h3>Selamat datang di Panel Admin Analitik Parlemen</h3>
+      </header>
+
+      <!-- CRUD Party -->
+      <div class="section active" id="crud">
+        <h3>✏️ Manajemen Partai</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Nama</th>
+              <th>Tanggal Berdiri</th>
+              <th>Logo</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="partyTableBody"></tbody>
+        </table>
+
+        <h4>Form Tambah/Edit Partai</h4>
+        <form id="partaiForm">
+          <input type="hidden" id="partaiId" name="partaiId" />
+          <input type="text" id="namaPartai" name="namaPartai" placeholder="Nama Partai" required />
+          <input type="date" id="tanggalBerdiri" name="tanggalBerdiri" placeholder="Tanggal Berdiri" required />
+          <input type="file" id="logoPartai" name="logoPartai" />
+          <button type="submit">Simpan</button>
+        </form>
+      </div>
+
+      <!-- Set Crawling Schedule -->
+      <div class="section" id="schedule">
+        <h3>⏰ Jadwal Crawling</h3>
+        <select>
+          <option>Setiap 3 jam</option>
+          <option>Setiap 6 jam</option>
+          <option>Setiap hari pukul...</option>
+        </select>
+        <input type="time" />
+        <button>Perbarui Jadwal</button>
+      </div>
+
+      <!-- Report Management -->
+      <div class="section" id="reports">
+        <h3>📑 Manajemen Laporan</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Nama Laporan</th>
+              <th>Tanggal</th>
+              <th>Jenis</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Laporan Sentimen April</td>
+              <td>2025-04-08</td>
+              <td>PDF</td>
+              <td>
+                <button class="icon-button" title="Lihat">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path
+                      d="M12 5c-7 0-11 7-11 7s4 7 11 7 11-7 11-7-4-7-11-7zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10zm0-2a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
+                  </svg>
+                </button>
+                <button>Unduh</button>
+                <button>Hapus</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <footer>
+        &copy; 2025 Analitik Parlemen. Seluruh hak cipta dilindungi.
+      </footer>
+  </div>
+
+  <script>
+    function showSection(id) {
+      const sections = document.querySelectorAll('.section');
+      const links = document.querySelectorAll('.sidebar a');
+
+      sections.forEach(section => section.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+
+      links.forEach(link => link.classList.remove('active'));
+      event.target.classList.add('active');
+    }
+
+    function logout() {
+      localStorage.removeItem('token');
+      Swal.fire({
+        icon: 'success',
+        title: 'Berhasil Logout',
+        timer: 2000,
+        showConfirmButton: false
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      fetchPartaiData();
+    });
+
+    async function fetchPartaiData() {
+      try {
+        const response = await fetch('http://localhost:8080/admin/partai', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + localStorage.getItem('token')
+          }
+        });
+        const result = await response.json();
+        const tbody = document.getElementById('partyTableBody');
+        tbody.innerHTML = '';
+
+        result.data.forEach(party => {
+          const imageUrl = `http://localhost:8080/${party.Logo.replace(/\\/g, "/")}`;
+          const encodedParty = btoa(JSON.stringify(party));
+          const row = `
+          <tr>
+            <td>${party.Name}</td>
+            <td>${party.EstablishDate.split('T')[0]}</td>
+            <td><img src="${imageUrl}" height="30"/></td>
+            <td>
+              <button onclick="editPartai('${encodedParty}')">Edit</button>
+              <button onclick="deletePartai(${party.ID})">Hapus</button>
+            </td>
+          </tr>
+        `;
+          tbody.innerHTML += row;
+        });
+      } catch (err) {
+        console.error('Gagal fetch partai:', err);
+        Swal.fire('Gagal!', 'Tidak dapat mengambil data partai.', 'error');
+      }
+    }
+
+    function deletePartai(id) {
+      Swal.fire({
+        title: 'Yakin ingin menghapus?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Hapus',
+        cancelButtonText: 'Batal'
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          const response = await fetch(`http://localhost:8080/admin/partai/${id}`, {
+            method: 'DELETE',
+            headers: {
+              'Authorization': 'Bearer ' + localStorage.getItem('token')
+            }
+          });
+
+          if (response.ok) {
+            Swal.fire('Terhapus!', 'Partai berhasil dihapus.', 'success');
+            fetchPartaiData();
+          } else {
+            Swal.fire('Gagal!', 'Tidak dapat menghapus partai.', 'error');
+          }
+        }
+      });
+    }
+
+    const form = document.getElementById('partaiForm');
+    const namaInput = document.getElementById('namaPartai');
+    const logoInput = document.getElementById('logoPartai');
+    const idInput = document.getElementById('partaiId');
+    const tanggalInput = document.getElementById('tanggalBerdiri');
+
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const formData = new FormData();
+      formData.append('name', namaInput.value);
+      formData.append('establish_date', tanggalInput.value);
+      if (logoInput.files[0]) {
+        formData.append('logo', logoInput.files[0]);
+      }
+
+      const partaiId = idInput.value;
+      let url = 'http://localhost:8080/admin/partai';
+      let method = 'POST';
+
+      if (partaiId) {
+        // Edit mode
+        url += '/' + partaiId;
+        method = 'PUT';
+      }
+
+      try {
+        const res = await fetch(url, {
+          method: method,
+          headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('token')
+          },
+          body: formData,
+        });
+
+        if (!res.ok) throw new Error("Gagal menyimpan data");
+
+        Swal.fire({
+          icon: 'success',
+          title: 'Berhasil!',
+          text: 'Data berhasil disimpan',
+          timer: 2000,
+          showConfirmButton: false
+        });
+
+        form.reset();
+        idInput.value = '';
+        fetchPartaiData();
+      } catch (error) {
+        console.error(error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops!',
+          text: 'Terjadi kesalahan saat menyimpan data',
+        });
+      }
+    });
+
+    function editPartai(encoded) {
+      const decoded = JSON.parse(atob(encoded));
+      document.getElementById('partaiId').value = decoded.ID;
+      document.getElementById('namaPartai').value = decoded.Name;
+      document.getElementById('tanggalBerdiri').value = decoded.EstablishDate.split('T')[0];
+    }
+
+
+  </script>
+</body>
+
+</html>

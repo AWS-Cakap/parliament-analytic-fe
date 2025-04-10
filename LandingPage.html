@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pantau Parlemen</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
+</head>
+<body class="bg-black text-white font-sans">
+
+  <!-- Header -->
+  <header class="bg-gray-900 shadow p-4 flex justify-between items-center">
+    <div class="flex items-center space-x-4">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/9/9f/Flag_of_Indonesia.svg" alt="Bendera Indonesia" class="h-6 w-auto">
+      <h1 class="text-2xl font-bold">Pantau Parlemen</h1>
+    </div>
+    <nav class="space-x-4">
+      <a href="#" class="hover:underline">Login</a>
+    </nav>
+  </header>
+
+  <main class="p-6 max-w-5xl mx-auto">
+    <!-- Grafik Sentimen -->
+    <section class="bg-gray-900 rounded-lg p-6 shadow-md">
+      <div class="flex flex-col md:flex-row justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold mb-2 text-center">Sentimen Politik per Partai</h2>
+        <input id="datepicker" class="bg-gray-800 text-white p-2 rounded border border-gray-600 w-40" placeholder="Filter Data" />
+      </div>
+      <div class="h-80">
+        <canvas id="sentimentChart"></canvas>
+      </div>
+      <p class="mt-4 text-sm text-gray-400 text-center">Data terakhir diperbarui pada: <span id="lastUpdate"></span></p>
+    </section>
+
+    <!-- Tombol Navigasi -->
+    <div class="mt-6 text-center">
+      <a href="#" class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded text-white font-semibold">Lihat Daftar Partai</a>
+    </div>
+
+    <!-- Berita Terkini -->
+    <section class="mt-10">
+      <h3 class="text-xl font-bold mb-4">Berita Terkini Terkait Parlemen</h3>
+      <div class="space-y-4">
+        <div class="bg-gray-900 p-4 rounded shadow">
+          <h4 class="font-semibold">Pengesahan RUU Terbaru oleh DPR</h4>
+          <p class="text-sm text-gray-400">Sumber: Kompas • 9 April 2025</p>
+          <a href="#" class="mt-2 inline-block bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-white text-sm">Lihat Selengkapnya</a>
+        </div>
+        <div class="bg-gray-900 p-4 rounded shadow">
+          <h4 class="font-semibold">Fraksi Golkar Dorong Reformasi Internal</h4>
+          <p class="text-sm text-gray-400">Sumber: Detik • 9 April 2025</p>
+          <a href="#" class="mt-2 inline-block bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-white text-sm">Lihat Selengkapnya</a>
+        </div>
+        <div class="bg-gray-900 p-4 rounded shadow">
+          <h4 class="font-semibold">Gerindra Siapkan Strategi Menjelang Pemilu</h4>
+          <p class="text-sm text-gray-400">Sumber: CNN Indonesia • 8 April 2025</p>
+          <a href="#" class="mt-2 inline-block bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-white text-sm">Lihat Selengkapnya</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Script Chart dan Flatpickr -->
+  <script>
+    const ctx = document.getElementById('sentimentChart').getContext('2d');
+    const sentimentChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['PDIP', 'Gerindra', 'Golkar'],
+        datasets: [
+          {
+            label: 'Positif',
+            data: [65, 40, 55],
+            backgroundColor: '#00FF00',
+            barThickness: 30
+          },
+          {
+            label: 'Negatif',
+            data: [35, 60, 45],
+            backgroundColor: '#FF0000',
+            barThickness: 30
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            labels: {
+              color: 'white',
+              font: {
+                size: 14
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            ticks: {
+              color: 'white',
+              font: {
+                size: 14
+              }
+            },
+            grid: {
+              color: 'rgba(255,255,255,0.1)'
+            }
+          },
+          y: {
+            ticks: {
+              color: 'white',
+              beginAtZero: true
+            },
+            grid: {
+              color: 'rgba(255,255,255,0.1)'
+            }
+          }
+        }
+      }
+    });
+
+    // Tanggal update
+    const now = new Date();
+    document.getElementById('lastUpdate').textContent = now.toLocaleString('id-ID');
+
+    // Flatpickr
+    flatpickr("#datepicker", {
+      dateFormat: "d-m-Y",
+      onChange: function(selectedDates, dateStr, instance) {
+        alert("Filter berdasarkan tanggal: " + dateStr);
+      }
+    });
+  </script>
+</body>
+</html>
